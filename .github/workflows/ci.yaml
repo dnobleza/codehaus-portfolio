@@ -6,8 +6,12 @@ on:
   pull_request:
     branches: [develop, master]
 
+permissions:
+  contents: read
+
 jobs:
-  hello:
+  client-portal:
+    name: client-portal test
     runs-on: ubuntu-latest
     steps:
       - run: echo "CI is alive"
