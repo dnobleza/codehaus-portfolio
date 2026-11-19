@@ -24,18 +24,19 @@ Run everything from `service/client-portal`.
 
 ### Environment setup
 
-1. Copy `.env.example` to `.env` (TODO: `.env.example` does not exist yet).
+1. Copy `.env.example` to `.env`.
 2. Fill in the values from the [Environment variables](#environment-variables) table.
 
 Never commit `.env`.
 
 ### Install
 
-TODO: `npm install` once dependencies are added to `package.json`.
+- `npm install`
 
 ### Run
 
-- `npm run dev`: dev server (TODO: script not defined yet)
+- `npm run dev`: dev server, restarts on changes in `src/` (nodemon)
+- `npm start`: start the server once, no file watching
 
 ### Test
 
@@ -73,13 +74,30 @@ Request flow: `route → controller → service → model`.
 
 ## Environment variables
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
-| TODO     | TODO     | TODO        |
+| Variable       | Required | Default | Description                                                  |
+| -------------- | -------- | ------- | ------------------------------------------------------------ |
+| `PORT`         | Yes      |         | Port the server listens on (1-65535)                         |
+| `NODE_ENV`     | Yes      |         | `development`, `production` or `test`                        |
+| `LOG_LEVEL`    | No       | `info`  | `error`, `warn`, `info` or `debug`                           |
+| `TRUST_PROXY`  | No       | `false` | `true`, `false`, or number of proxy hops (when behind a proxy) |
+| `CORS_ORIGINS` | No       | (none)  | Comma-separated list of allowed browser origins              |
+
+The server refuses to start if a required variable is missing or invalid.
 
 ## Endpoints
 
-None yet. Routes are versioned: `/api/v1/...`, admin routes `/api/v1/admin/...`.
+Routes are versioned: `/api/v1/...`, admin routes `/api/v1/admin/...`. `/health` is not versioned.
+
+### GET /health
+
+Liveness check. No auth.
+
+- Request: none
+- Responses: `200 { "status": "ok" }`
+- Errors: none
+- Rules: unversioned on purpose, so load balancers and uptime checks keep working across API versions.
+
+Unknown routes return `404 { "error": "Not found" }`.
 
 Each endpoint gets its own section with:
 
