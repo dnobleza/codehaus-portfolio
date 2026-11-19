@@ -13,6 +13,23 @@ jobs:
   client-portal:
     name: client-portal tests
     runs-on: ubuntu-latest
+    # Throwaway CI-only credentials, same idea as JWT_SECRET below.
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: codehaus_portfolio_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci -d codehaus_portfolio_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ci:ci-only-password@localhost:5432/codehaus_portfolio_test
     steps:
       - uses: actions/checkout@v6
 
@@ -24,6 +41,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: service/client-portal
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+        working-directory: service/client-portal
+
+      - name: Apply migrations
+        run: npm run db:deploy
         working-directory: service/client-portal
 
       - name: Run tests

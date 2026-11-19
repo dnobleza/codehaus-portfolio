@@ -6,13 +6,20 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node --env-file=.env src/server.js",
-    "test": "node --env-file-if-exists=.env.test --test --test-concurrency=1"
+    "test": "node --env-file-if-exists=.env.test --test --test-concurrency=1",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:create": "prisma migrate dev --create-only",
+    "db:deploy": "prisma migrate deploy",
+    "db:test:migrate": "node --env-file=.env.test node_modules/prisma/build/index.js migrate deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
     "cors": "^2.8.6",
     "express": "^5.3.0",
     "helmet": "^8.3.0",
@@ -20,6 +27,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.14",
+    "prisma": "7.10.1",
     "supertest": "^7.3.2"
   }
 }
