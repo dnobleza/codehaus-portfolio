@@ -27,6 +27,40 @@ if (!databaseUrl) {
   errors.push('DATABASE_URL must start with postgres:// or postgresql://');
 }
 
+// Tests create and delete users. Refuse to run them against anything that is
+// not clearly a test database. Never print the URL: it contains credentials.
+if (nodeEnv === 'test' && databaseUrl && /^postgres(ql)?:\/\//.test(databaseUrl)) {
+  let dbName = '';
+  try {
+    dbName = decodeURIComponent(new URL(databaseUrl).pathname.replace(/^\//, ''));
+  } catch {
+    // Unparseable URL: dbName stays empty and fails the check below.
+  }
+  if (!dbName.endsWith('_test')) {
+    errors.push('DATABASE_URL must point to a database whose name ends with _test when NODE_ENV is test');
+  }
+}
+
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  errors.push('JWT_SECRET is required');
+} else if (jwtSecret.length < 32) {
+  errors.push('JWT_SECRET must be at least 32 characters');
+}
+
+// jsonwebtoken reads a digit-only string as milliseconds, which is a trap.
+// So digits alone become a number of seconds; otherwise require a unit.
+const rawJwtExpires = process.env.JWT_EXPIRES || '1d';
+let jwtExpires = rawJwtExpires;
+if (/^\d+$/.test(rawJwtExpires)) {
+  jwtExpires = Number(rawJwtExpires);
+  if (jwtExpires < 1) {
+    errors.push('JWT_EXPIRES must be greater than 0');
+  }
+} else if (!/^[1-9]\d*[smhd]$/.test(rawJwtExpires)) {
+  errors.push('JWT_EXPIRES must be seconds (3600) or a number with a unit s, m, h or d (e.g. 15m, 1d)');
+}
+
 const logLevel = process.env.LOG_LEVEL || 'info';
 if (!LOG_LEVELS.includes(logLevel)) {
   errors.push(`LOG_LEVEL must be one of: ${LOG_LEVELS.join(', ')}`);
@@ -58,6 +92,8 @@ module.exports = Object.freeze({
   port,
   nodeEnv,
   databaseUrl,
+  jwtSecret,
+  jwtExpires,
   logLevel,
   trustProxy,
   corsOrigins,

@@ -7,6 +7,7 @@ const requestLogger = require('./middleware/requestLogger');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 const healthRoute = require('./routes/health.route');
+const authRoute = require('./routes/auth.route');
 
 const app = express();
 
@@ -22,7 +23,8 @@ app.use(cors({ origin: config.corsOrigins }));
 app.use(express.json({ limit: '10kb' }));
 
 app.use('/health', healthRoute);
-// TODO: mount /api/v1 routes here as they are built
+app.use('/api/v1/auth', authRoute);
+// TODO: mount the rest of /api/v1 here as they are built
 
 app.use(notFound);
 app.use(errorHandler);
