@@ -20,6 +20,13 @@ if (!nodeEnv) {
   errors.push(`NODE_ENV must be one of: ${NODE_ENVS.join(', ')}`);
 }
 
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  errors.push('DATABASE_URL is required');
+} else if (!/^postgres(ql)?:\/\//.test(databaseUrl)) {
+  errors.push('DATABASE_URL must start with postgres:// or postgresql://');
+}
+
 const logLevel = process.env.LOG_LEVEL || 'info';
 if (!LOG_LEVELS.includes(logLevel)) {
   errors.push(`LOG_LEVEL must be one of: ${LOG_LEVELS.join(', ')}`);
@@ -50,6 +57,7 @@ if (errors.length > 0) {
 module.exports = Object.freeze({
   port,
   nodeEnv,
+  databaseUrl,
   logLevel,
   trustProxy,
   corsOrigins,
