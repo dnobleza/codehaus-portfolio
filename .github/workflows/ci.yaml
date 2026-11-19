@@ -11,24 +11,27 @@ permissions:
 
 jobs:
   client-portal:
-    name: client-portal test
+    name: client-portal tests
     runs-on: ubuntu-latest
     steps:
-      - run: echo "CI is alive"
-steps:
-  - uses: actions/checkout@v6
-  - uses: ls -la
-    with:
-      node-version: 24
-      cache: npm
-      cache-dependecy-path: service/client-portal/package.json
-  - run: npm CI
-    working-directory: service/client-portal
-  - run: npm test
-    working-directory: service/client-portal
-    env:
-      NODE_ENV: test
-      PORT: '3001'
-      JWT_SECRET: ci-only-throwaway-secret-at-least-32-chars-long
-      CORS_ORIGINS: http://localhost:5173
-      LOG_LEVEL: error
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: service/client-portal/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: service/client-portal
+
+      - name: Run tests
+        run: npm test
+        working-directory: service/client-portal
+        env:
+          NODE_ENV: test
+          PORT: '3001'
+          JWT_SECRET: ci-only-throwaway-secret-at-least-32-chars-long
+          CORS_ORIGINS: http://localhost:5173
+          LOG_LEVEL: error
