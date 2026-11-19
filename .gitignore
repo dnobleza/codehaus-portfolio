@@ -1,0 +1,46 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Environment files (keep the example)
+.env
+.env.*
+!.env.example
+
+# Prisma generated output
+generated/
+
+# Logs and temp
+*.log
+logs/
+npm-debug.log*
+tmp/
+.cache/
+*.tsbuildinfo
+
+# Docker local data
+docker/**/data
+*.pgdata
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+
+# Claude Code local and session files
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+PROGRESS.md
+.claude.json
+.mcp.json
